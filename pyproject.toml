@@ -8,8 +8,12 @@ dynamic = ["version"]
 description = ''
 readme = "README.md"
 requires-python = ">=3.9"
-license = "MIT"
-keywords = []
+license = {file="LICENSE.txt"}
+keywords = [
+  "lilya",
+  "esmerald",
+  "encoders"
+]
 authors = [
   { name = "alex", email = "devkral@web.de" },
 ]
@@ -21,6 +25,8 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: BSD License",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -38,6 +44,7 @@ path = "generic_json_encoders/__about__.py"
 dependencies = [
   "pydantic",
   "msgspec",
+  "lilya",
 ]
 
 
@@ -46,7 +53,7 @@ extra-dependencies = [
   "mypy>=1.0.0",
 ]
 [tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:generic_json_encoders tests}"
+check = "mypy generic_json_encoders tests {args}"
 
 [tool.coverage.run]
 source_pkgs = ["generic_json_encoders", "tests"]

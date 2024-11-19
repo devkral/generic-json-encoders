@@ -130,6 +130,7 @@ def json_encode(value: Any, annotation: Any = None, **kwargs: Any) -> bytes:
     ValueError: If the value is not serializable by any provided encoder type.
     """
     chained = kwargs.pop("default", _raise_error)
+    kwargs.setdefault("option", orjson.OPT_SERIALIZE_NUMPY)
     return orjson.dumps(
         value,
         default=partial(_parse_extra_type, chained=chained),
@@ -146,19 +147,3 @@ def simplify(value: Any, **kwargs: Any) -> bytes:
     Any: The JSON-compatible encoded value.
     """
     return orjson.loads(json_encode(value, **kwargs))
-
-
-try:
-    from lilya._internal import encoders as lilya_encoders
-
-    class InjectedEncoder(lilya_encoders.Encoder):
-        def is_type(self, value: Any) -> bool:
-            return True
-
-        def serialize(self, obj: Any) -> Any:
-            return simplify(obj)
-
-    lilya_encoders.register_encoder(InjectedEncoder())
-
-except ImportError:
-    pass

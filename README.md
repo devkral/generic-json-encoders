@@ -2,7 +2,6 @@
 
 A speedier version of the lilya encoders with more correct results and support for pydantic and msgspec.
 It uses under the hood orjson.
-It auto-patches itself as lilya encoder when lilya is detected.
 
 [![PyPI - Version](https://img.shields.io/pypi/v/generic-json-encoders.svg)](https://pypi.org/project/generic-json-encoders)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/generic-json-encoders.svg)](https://pypi.org/project/generic-json-encoders)
@@ -20,12 +19,39 @@ It auto-patches itself as lilya encoder when lilya is detected.
 pip install generic-json-encoders
 ```
 
-Note:
-
-When lilya is detected it patches itself as default json_encoder.
-
 ## Usage
 
+``` python
+import datetime
+from decimal import Decimal
+from generic_json_encoders import json_encode, simplify
+
+test_obj = {
+    "datetime": datetime.datetime.now(),
+    "date": datetime.date.today(),
+    "decimal": Decimal("0.3").
+}
+
+# get json byte string
+print(json_encode(test_obj))
+# get simplified json serializable object
+print(json_encode(test_obj))
+```
+
+### Integrating in lilya
+
+Put somewhere in the init code of your application
+
+``` python
+from importlib import import_module
+from contextlib import suppress
+
+...
+with suppress(ImportError):
+    import_module("generic_json_encoders.lilya_monkey_patcher")
+...
+
+```
 
 
 ## License
