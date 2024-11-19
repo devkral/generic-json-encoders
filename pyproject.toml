@@ -1,0 +1,68 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "generic-json-encoders"
+dynamic = ["version"]
+description = ''
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "alex", email = "devkral@web.de" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = ["orjson"]
+
+[project.urls]
+Documentation = "https://github.com/devkral/generic-json-encoders#readme"
+Issues = "https://github.com/devkral/generic-json-encoders/issues"
+Source = "https://github.com/devkral/generic-json-encoders"
+
+[tool.hatch.version]
+path = "generic_json_encoders/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "pydantic",
+  "msgspec",
+]
+
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:generic_json_encoders tests}"
+
+[tool.coverage.run]
+source_pkgs = ["generic_json_encoders", "tests"]
+branch = true
+parallel = true
+omit = [
+  "generic_json_encoders/__about__.py",
+]
+
+[tool.coverage.paths]
+generic_json_encoders = ["generic_json_encoders", "*/generic-json-encoders/generic_json_encoders"]
+tests = ["tests", "*/generic-json-encoders/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
