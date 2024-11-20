@@ -21,6 +21,9 @@ pip install generic-json-encoders
 
 ## Usage
 
+**Basic**
+
+
 ``` python
 import datetime
 from decimal import Decimal
@@ -38,6 +41,22 @@ print(json_encode(test_obj))
 print(json_encode(test_obj))
 ```
 
+**Advanced**
+
+`generic_json_encoders` can also apply annotations in esmerald style. However the annotations must be evaluated.
+
+
+``` python
+import datetime
+from functools import partial
+from decimal import Decimal
+from generic_json_encoders import apply_annotation
+
+apply_annotation("2.333", Decimal)
+apply_annotation("2.333", Decimal, partial(transform_fn=simplify))
+```
+
+
 ### Integrating in lilya
 
 Put somewhere in the init code of your application
@@ -50,6 +69,18 @@ from contextlib import suppress
 with suppress(ImportError):
     import_module("generic_json_encoders.lilya_monkey_patcher")
 ...
+
+```
+
+### Integrating in esmerald
+
+``` python
+import esmerald
+
+from generic_json_encoders.lilya_monkey_patcher import GenericJsonEncoder
+
+# you need it here too, for registering at the first place
+app = esmerald.Esmerald(encoders=[GenericJsonEncoder()])
 
 ```
 
