@@ -5,7 +5,7 @@ from collections import deque
 from collections.abc import Callable, Generator, Iterable
 from contextlib import suppress
 from functools import partial
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, cast
 
 import orjson
 
@@ -36,14 +36,14 @@ class StructureEncoder(Encoder):
 
 
 class NamedTupleEncoder(Encoder):
-    def serialize(self, obj: Any) -> list[Any]:
+    def serialize(self, obj: Any) -> dict:
         if not isinstance(obj, tuple) or not hasattr(obj, "_asdict"):
             raise Skip
-        return obj._asdict()
+        return cast(dict, obj._asdict())
 
 
 class JSONEncodeEncoder(Encoder):
-    def serialize(self, obj: Any) -> str:
+    def serialize(self, obj: Any) -> orjson.Fragment:
         if not hasattr(obj, "json_encode"):
             raise Skip
         return orjson.Fragment(obj.json_encode())
@@ -71,7 +71,7 @@ def register_encoder(encoder: Encoder) -> None:
 try:
     from msgspec import Struct, json
 
-    class MsgSpecEncoder(Encoder):
+    class MsgSpecEncoder(Encoder[Struct, orjson.Fragment]):
         def serialize(self, obj: Any) -> orjson.Fragment:
             """
             When a `msgspec.Struct` is serialised,
@@ -81,7 +81,7 @@ try:
                 raise Skip()
             return orjson.Fragment(json.encode(obj))
 
-    register_encoder(MsgSpecEncoder)
+    register_encoder(MsgSpecEncoder())
 except ImportError:
     pass
 
@@ -89,21 +89,19 @@ except ImportError:
 try:
     from pydantic import BaseModel
 
-    class PydanticEncoder(Encoder):
+    class PydanticEncoder(Encoder[BaseModel, orjson.Fragment]):
         def serialize(self, obj: BaseModel) -> orjson.Fragment:
             if not isinstance(obj, BaseModel):
                 raise Skip()
             return orjson.Fragment(obj.model_dump_json())
 
-    register_encoder(PydanticEncoder)
+    register_encoder(PydanticEncoder())
 except ImportError:
     pass
 
 
 def _raise_error(value: Any) -> None:
-    raise ValueError(
-        f"Object of type '{type(value).__name__}' is not JSON serializable."
-    )
+    raise ValueError(f"Object of type '{type(value).__name__}' is not JSON serializable.")
 
 
 def _parse_extra_type(value: Any, *, chained: Callable[[Any], Any]) -> Any:
@@ -138,7 +136,7 @@ def json_encode(value: Any, annotation: Any = None, **kwargs: Any) -> bytes:
     )
 
 
-def simplify(value: Any, **kwargs: Any) -> bytes:
+def simplify(value: Any, **kwargs: Any) -> Any:
     """
     Parameters:
     value (Any): The value to encode.

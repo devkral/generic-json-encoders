@@ -47,3 +47,13 @@ def test_json_encode(inp, result):
 )
 def test_json_simplify(inp, result):
     assert simplify(inp) == result
+
+
+def test_monkey_patching():
+    from lilya.encoders import ENCODER_TYPES
+
+    from generic_json_encoders.lilya_monkey_patcher import InjectedGenericJsonEncoder
+
+    assert ENCODER_TYPES[0].__class__ is InjectedGenericJsonEncoder
+    assert ENCODER_TYPES[0].serialize(True) is True
+    assert ENCODER_TYPES[0].serialize(datetime.date(year=2024, month=12, day=1)) == "2024-12-01"
