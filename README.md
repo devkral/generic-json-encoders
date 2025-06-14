@@ -1,5 +1,10 @@
 # generic-json-encoders
 
+**THIS PROJECT IS DEPRECATED!!!!!!**
+
+I got the changes implemented in lilya.
+
+
 A speedier version of the lilya encoders with more correct results and support for pydantic and msgspec.
 It uses under the hood orjson.
 
